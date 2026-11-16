@@ -1,0 +1,60 @@
+name: release
+
+# On a version tag, build the Docker image and publish it to GHCR so users get a
+# fast pull instead of a 30-60s build on every run. Also moves the major tag (v1) so
+# consumers can pin to it.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  publish-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive tags
+        id: meta
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          MAJOR="${VERSION%%.*}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "major=${MAJOR}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}
+            ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.major }}
+            ghcr.io/${{ github.repository }}:latest
+
+  move-major-tag:
+    needs: publish-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Move major tag to this release
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          MAJOR="${VERSION%%.*}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f "${MAJOR}"
+          git push -f origin "${MAJOR}"

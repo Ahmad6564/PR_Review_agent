@@ -1,0 +1,46 @@
+name: "PRLens"
+description: "AI code review that only comments when it has something worth saying"
+author: "Ahmad6564"
+branding:
+  icon: "eye"
+  color: "purple"
+
+inputs:
+  github-token:
+    description: "Token used to read the PR and post the review"
+    required: false
+    default: ${{ github.token }}
+  model:
+    description: "Model ID to use (GitHub Models, OpenAI-compatible). Verify current IDs in GitHub's docs."
+    required: false
+    default: "openai/gpt-4o-mini"
+  max-comments:
+    description: "Hard cap on inline comments per PR"
+    required: false
+    default: "5"
+  min-confidence:
+    description: "Findings below this confidence are dropped (0-1)"
+    required: false
+    default: "0.7"
+  categories:
+    description: "Comma-separated categories to report"
+    required: false
+    default: "bug,security,correctness,performance"
+  config-file:
+    description: "Path to repo-level config"
+    required: false
+    default: ".prlens.yml"
+
+runs:
+  using: "docker"
+  # For development this builds from the Dockerfile. For releases, repoint this at a
+  # pre-built image to turn a 30-60s build into a fast pull:
+  #   image: "docker://ghcr.io/Ahmad6564/PR_Review_agent:v1"
+  image: "Dockerfile"
+  env:
+    GITHUB_TOKEN: ${{ inputs.github-token }}
+    INPUT_MODEL: ${{ inputs.model }}
+    INPUT_MAX_COMMENTS: ${{ inputs.max-comments }}
+    INPUT_MIN_CONFIDENCE: ${{ inputs.min-confidence }}
+    INPUT_CATEGORIES: ${{ inputs.categories }}
+    INPUT_CONFIG_FILE: ${{ inputs.config-file }}

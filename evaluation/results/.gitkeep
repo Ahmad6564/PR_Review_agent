@@ -1,0 +1,2 @@
+# Generated evaluation artifacts (ablation table, charts, JSON) land here.
+# Committed outputs are kept; re-generate with `make eval`.

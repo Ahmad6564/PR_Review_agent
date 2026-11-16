@@ -1,0 +1,18 @@
+{
+  "owner": "acme",
+  "repo": "widgets",
+  "number": 1234,
+  "title": "Add LRU eviction to the cache",
+  "body": "Evicts the oldest entries when the cache grows past its capacity.",
+  "head_sha": "abc123def456",
+  "existing_comments": [],
+  "files": [
+    {
+      "filename": "src/cache.py",
+      "status": "modified",
+      "additions": 9,
+      "deletions": 1,
+      "patch": "@@ -28,7 +28,15 @@ class Cache:\n     def set(self, key, value):\n         self._store[key] = value\n         self._order.append(key)\n-        return value\n+        self._evict_if_needed()\n+        return value\n+\n+    def _evict_if_needed(self):\n+        # Remove oldest entries until we are within capacity.\n+        while len(self._store) > self.capacity:\n+            oldest = self._order[0]\n+            del self._store[oldest]\n+            # BUG: self._order is never trimmed, so index 0 keeps pointing at a\n+            # key that was already deleted on the next iteration."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+name: Self review
+
+# PRLens reviews its own pull requests. This is the best demo, the best test harness,
+# and it makes the repo feel alive from day one.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read         # read the checked-out code for the agent's tools
+  pull-requests: write   # post the review
+  models: read           # grant the built-in token access to GitHub Models
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          max-comments: "5"

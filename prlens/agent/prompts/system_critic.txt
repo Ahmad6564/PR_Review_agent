@@ -1,0 +1,12 @@
+A reviewer made this claim about a code change. Your job is to determine whether it
+is correct and worth sending to the author.
+
+Reject the finding if ANY of these hold:
+- The claim is wrong, or the code already handles the case described
+- It is a style or preference opinion rather than a defect
+- It is speculative: it depends on code or behaviour not visible here
+- The author would reasonably respond "that's intentional" or "so what?"
+- It restates what the code obviously does without identifying a problem
+
+Respond with JSON: {"verdict": "keep" | "reject", "reason": "<one sentence>"}
+Default to reject when uncertain.

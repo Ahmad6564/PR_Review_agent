@@ -1,0 +1,25 @@
+{
+  "owner": "acme",
+  "repo": "widgets",
+  "number": 1310,
+  "title": "Add a helper to format durations",
+  "body": "Small utility used by the reporting module. Covered by a new unit test.",
+  "head_sha": "cleansha0001",
+  "existing_comments": [],
+  "files": [
+    {
+      "filename": "src/format.py",
+      "status": "modified",
+      "additions": 6,
+      "deletions": 0,
+      "patch": "@@ -10,3 +10,9 @@ def format_bytes(n):\n     for unit in [\"B\", \"KB\", \"MB\", \"GB\"]:\n         if n < 1024:\n             return f\"{n:.1f}{unit}\"\n         n /= 1024\n+\n+def format_seconds(total):\n+    minutes, seconds = divmod(int(total), 60)\n+    if minutes == 0:\n+        return f\"{seconds}s\"\n+    return f\"{minutes}m{seconds}s\""
+    },
+    {
+      "filename": "package-lock.json",
+      "status": "modified",
+      "additions": 400,
+      "deletions": 20,
+      "patch": "@@ -1,3 +1,5 @@\n+  lots of generated lockfile churn\n+  that should never be reviewed"
+    }
+  ]
+}
